@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+
+const firebase  = require('../firebase/util');
+const TelegramBot = require('node-telegram-bot-api');
+const crawler  = require('../crawler/packtpub');
+
+const properties  = require('../package.json');
+
+const bot = new TelegramBot(properties.token);
+
+function execute(){
+
+    crawler.fetch().then(function(book){
+
+        var txt = "*" + book.title + "* [img](" + book.thumbnail
+            + ") --> [SEE DETAIL](" + book.link
+            + ") --> [CLAIM BOOK](" + book.claim + ")";
+
+        firebase
+            .getChatsRF()
+            .once("value", function(snapshot){
+                snapshot.forEach(function(data){
+
+                    var chat = data.val();
+
+                    bot.sendMessage(chat.id, "PacktPub Free Learning")
+                        .then(function(){
+
+                            bot.sendMessage(chat.id,
+                                txt, {
+                                    "parse_mode" : 'Markdown'
+                                }).then(function(){ console.log("bot sended message..."); });
+
+                        });
+
+                });
+            });
+
+    });
+}
+
+// Task is running
+
+console.log("cron is started");
+
+execute()
+
+console.log("cron is finished");

@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+
+const http = require('http');
+const express = require('express');
+const bodyParser = require('body-parser');
+const TelegramBot = require('node-telegram-bot-api');
+
+const crawler  = require('../crawler/packtpub');
+const firebase  = require('../firebase/util');
+
+const properties  = require('../package.json');
+
+const bot = new TelegramBot(properties.token);
+bot.setWebHook("https://medium-packtpub-bot.herokuapp.com/" + properties.token);
+
+var app = express();
+app.use(bodyParser.json());
+
+var port = process.env.PORT || '3000';
+app.set('port', port);
+
+var server = http.createServer(app);
+server.listen(port)
+    .on('error', function onError(error) {
+      console.log(error);
+    })
+    .on('listening', function onListening() {
+      var addr = server.address();
+      var bind = typeof addr === 'string'
+          ? 'pipe ' + addr
+          : 'port ' + addr.port;
+      console.log('Listening on ' + bind);
+    });
+
+// telegram webhook adress listener
+app.post('/' + bot.token, function (req, res) {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
+
+// on /packtpub message received
+bot.onText(/^\/packtpub/, function (message) {
+
+  const chatId = message.chat.id;
+
+  firebase.saveChat(chatId, message.chat);
+
+  crawler.fetch().then(function(book){
+
+    var txt = "*" + book.title + "* [img](" + book.thumbnail
+        + ") --> [SEE DETAIL](" + book.link
+        + ") --> [CLAIM BOOK](" + book.claim + ")";
+
+    bot.sendMessage(chatId,
+        txt, {
+          "parse_mode" : 'Markdown'
+        }).then(function () { console.log("bot replied..."); });
+  });
+});
