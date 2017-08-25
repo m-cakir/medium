@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://wwww.thymelaf.org" xmlns:tiles="http://wwww.thymelaf.org">
+<head lang="en">
+</head>
+<body>
+
+<div>
+
+    <h1>Movies</h1>
+
+    <ul>
+        <li th:each="movie : ${movies}" th:text="${movie.name} + ' ~ ' + ${movie.director}"></li>
+    </ul>
+
+</div>
+
+</body>
+</html>
