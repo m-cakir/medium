@@ -1,0 +1,7 @@
+insert into movie (name, director) values ('Matrix', 'Wachowski Brothers')
+insert into movie (name, director) values ('The Man from Earth', 'Richard Schenkman')
+insert into movie (name, director) values ('No Mercy', 'Kim Hyeong-jun')
+insert into movie (name, director) values ('Spiderman', 'Sam Raimi')
+insert into movie (name, director) values ('PK', 'Rajkumar Hirani')
+insert into movie (name, director) values ('Zootopia', 'Byron Howard, Rich Moore')
+insert into movie (name, director) values ('Rurouni Kenshin: Meiji Kenkaku Romantan', 'Keishi Ohtomo')
